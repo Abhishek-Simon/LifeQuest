@@ -26,6 +26,7 @@ import { Codex } from './pages/Codex';
 import { Journal } from './pages/Journal';
 import { Placeholder } from './pages/Placeholder';
 import { WeeklyAdventure } from './pages/WeeklyAdventure';
+import { Leaderboard } from './pages/Leaderboard';
 
 const GlobalLoader = () => (
   <div className="w-full h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
@@ -101,6 +102,7 @@ function AppRoutes() {
         </PrivateRoute>
       }>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/quests" element={<QuestBoard />} />
         <Route path="/quests/:questId" element={<QuestDetail />} />
         <Route path="/character" element={<Character />} />

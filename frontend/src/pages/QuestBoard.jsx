@@ -5,14 +5,15 @@ import { QuestCard } from '../components/quests/QuestCard';
 import { questService } from '../services/api/questService';
 import { decisionService } from '../services/api/decisionService';
 import { CATEGORIES, DIFFICULTIES } from '../data/mockQuests';
-import { CreateQuestModal } from '../components/quests/CreateQuestModal';
+import { QuestFormModal } from '../components/quests/QuestFormModal';
 
 export const QuestBoard = () => {
   const [quests, setQuests] = useState([]);
   const [recommended, setRecommended] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingQuest, setEditingQuest] = useState(null);
   
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('All');
@@ -58,6 +59,22 @@ export const QuestBoard = () => {
   const handleCreateQuest = async (questData) => {
     const newQuest = await questService.createQuest(questData);
     setQuests(prev => [newQuest, ...prev]);
+  };
+
+  const handleEditQuest = async (questData) => {
+    const updated = await questService.updateQuest(editingQuest.id, questData);
+    setQuests(prev => prev.map(q => q.id === updated.id ? updated : q));
+  };
+
+  const handleDeleteQuest = async (id) => {
+    if (window.confirm("DELETE QUEST?\n\nThis quest will be removed from your active list.")) {
+      try {
+        await questService.deleteQuest(id);
+        setQuests(prev => prev.filter(q => q.id !== id));
+      } catch (err) {
+        alert("QUEST COULDN'T BE DELETED. TRY AGAIN");
+      }
+    }
   };
 
   const filteredQuests = useMemo(() => {
@@ -112,7 +129,7 @@ export const QuestBoard = () => {
           <div className="flex items-center gap-space-md">
             <h1 className="font-headline-xl text-headline-xl text-text-primary tracking-tight uppercase">Quest Board</h1>
             <button 
-              onClick={() => setIsCreateModalOpen(true)}
+              onClick={() => setIsModalOpen(true)}
               className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded flex items-center gap-1 font-label-rpg-sm uppercase transition-colors"
             >
               <span className="material-symbols-outlined text-[18px]">add</span>
@@ -191,6 +208,8 @@ export const QuestBoard = () => {
                 <QuestCard 
                   key={quest.id} 
                   quest={quest} 
+                  onEdit={() => setEditingQuest(quest)}
+                  onDelete={() => handleDeleteQuest(quest.id)}
                 />
               ))
             )}
@@ -198,10 +217,11 @@ export const QuestBoard = () => {
         </div>
       </div>
       
-      <CreateQuestModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-        onCreate={handleCreateQuest} 
+      <QuestFormModal 
+        isOpen={isModalOpen || !!editingQuest} 
+        initialData={editingQuest}
+        onClose={() => { setIsModalOpen(false); setEditingQuest(null); }} 
+        onSubmit={editingQuest ? handleEditQuest : handleCreateQuest} 
       />
     </div>
   );

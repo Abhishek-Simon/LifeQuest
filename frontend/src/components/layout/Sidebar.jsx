@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../../utils/cn';
-import { LayoutDashboard, Target, User, Swords, Shield, ShoppingBag, Store, Award, BookOpen, Book, BarChart3, Settings, Menu, X, PackageOpen, Trophy } from 'lucide-react';
+import { LayoutDashboard, Target, User, Swords, Shield, ShoppingBag, Store, Award, BookOpen, Book, BarChart3, Settings, Menu, X, PackageOpen, Trophy, Crown } from 'lucide-react';
 
 const navItems = [
   { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/leaderboard', label: 'Leaderboard', icon: Crown },
   { path: '/quests', label: 'Quests', icon: Target },
   { path: '/character', label: 'Character', icon: User },
   { path: '/skill-tree', label: 'Skill Tree', icon: Swords },

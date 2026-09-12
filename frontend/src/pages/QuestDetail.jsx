@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { questService } from '../services/api/questService';
 import { RewardPopup } from '../components/common/RewardPopup';
+import { QuestFormModal } from '../components/quests/QuestFormModal';
 
 export const QuestDetail = () => {
   const { questId } = useParams();
@@ -14,10 +15,10 @@ export const QuestDetail = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Interaction States
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [reward, setReward] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -108,6 +109,26 @@ export const QuestDetail = () => {
     navigate('/quests'); // Return to board after completion
   };
 
+  const handleEditQuest = async (questData) => {
+    try {
+      const updated = await questService.updateQuest(questId, questData);
+      setQuest(updated);
+    } catch (err) {
+      throw err; // Modal handles this error
+    }
+  };
+
+  const handleDeleteQuest = async () => {
+    if (window.confirm("DELETE QUEST?\n\nThis quest will be permanently removed.")) {
+      try {
+        await questService.deleteQuest(questId);
+        navigate('/quests');
+      } catch (err) {
+        setActionError("QUEST COULDN'T BE DELETED. TRY AGAIN");
+      }
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 10 }}
@@ -117,13 +138,30 @@ export const QuestDetail = () => {
       <RewardPopup reward={reward} onClose={handleCloseReward} questId={quest.id} />
       {/* Header */}
       <div className="flex flex-col gap-space-md border-b border-border-subtle pb-space-md">
-        <button 
-          onClick={() => navigate('/quests')}
-          className="self-start flex items-center gap-1 text-text-muted hover:text-text-primary transition-colors font-label-rpg-sm uppercase"
-        >
-          <span className="material-symbols-outlined text-[16px]">arrow_back</span>
-          Back to Quest Board
-        </button>
+        <div className="flex items-center justify-between">
+          <button 
+            onClick={() => navigate('/quests')}
+            className="flex items-center gap-1 text-text-muted hover:text-text-primary transition-colors font-label-rpg-sm uppercase"
+          >
+            <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            Back to Quest Board
+          </button>
+          
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => setIsEditing(true)}
+              className="flex items-center gap-1 text-text-secondary hover:text-text-primary transition-colors font-label-rpg-sm uppercase"
+            >
+              <span className="material-symbols-outlined text-[16px]">edit</span> Edit
+            </button>
+            <button 
+              onClick={handleDeleteQuest}
+              className="flex items-center gap-1 text-text-secondary hover:text-hazard-crimson transition-colors font-label-rpg-sm uppercase"
+            >
+              <span className="material-symbols-outlined text-[16px]">delete</span> Delete
+            </button>
+          </div>
+        </div>
         
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-space-xs flex-wrap">
@@ -308,6 +346,12 @@ export const QuestDetail = () => {
         )}
       </div>
 
+      <QuestFormModal
+        isOpen={isEditing}
+        initialData={quest}
+        onClose={() => setIsEditing(false)}
+        onSubmit={handleEditQuest}
+      />
     </motion.div>
   );
 };

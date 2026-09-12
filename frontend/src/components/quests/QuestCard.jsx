@@ -1,9 +1,21 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-export const QuestCard = ({ quest }) => {
+export const QuestCard = ({ quest, onEdit, onDelete }) => {
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   
   const isLocked = quest.status === 'locked';
   const isActive = quest.status === 'active';
@@ -72,9 +84,43 @@ export const QuestCard = ({ quest }) => {
         </div>
         
         {/* Rewards Block */}
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <span className="font-stat-display-sm text-stat-display-sm text-primary leading-none">+{quest.rewards.xp} XP</span>
-          <div className="flex items-center gap-1 font-label-rpg-sm text-label-rpg-sm text-tertiary uppercase">
+        <div className="flex flex-col items-end gap-1 shrink-0 relative">
+          <div className="flex items-center gap-2">
+            <span className="font-stat-display-sm text-stat-display-sm text-primary leading-none">+{quest.rewards.xp} XP</span>
+            <div className="relative" ref={menuRef}>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+                className="text-text-muted hover:text-text-primary transition-colors p-1 rounded-full hover:bg-surface-overlay"
+              >
+                <span className="material-symbols-outlined text-[20px]">more_vert</span>
+              </button>
+              
+              <AnimatePresence>
+                {isMenuOpen && (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-1 w-36 bg-surface-card border border-border-subtle rounded-md shadow-lg overflow-hidden z-20"
+                  >
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); if (onEdit) onEdit(); }}
+                      className="w-full text-left px-4 py-2 text-sm text-text-primary hover:bg-surface-overlay flex items-center gap-2 font-body-sm"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">edit</span> Edit
+                    </button>
+                    <button 
+                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); if (onDelete) onDelete(); }}
+                      className="w-full text-left px-4 py-2 text-sm text-hazard-crimson hover:bg-hazard-crimson/10 flex items-center gap-2 font-body-sm"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">delete</span> Delete
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 font-label-rpg-sm text-label-rpg-sm text-tertiary uppercase mr-8">
             <span className="material-symbols-outlined text-[12px]">monetization_on</span> {quest.rewards.gold} G
           </div>
         </div>
