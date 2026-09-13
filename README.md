@@ -7,7 +7,7 @@
 ## ✨ Features
 
 - **Cinematic Onboarding**: A 5-step interactive initiation sequence that determines your player archetype, ambition, and core attributes.
-- **Quest Engine & Dashboard**: Create, track, and complete daily quests. Quests grant XP and Gold, and improve specific RPG attributes.
+- **Quest Engine & Dashboard**: Create, track and complete daily quests. Quests grant XP and Gold, and improve specific RPG attributes.
 - **RPG Attribute System**: Grow your character across 6 core stats: *Strength, Intellect, Endurance, Wisdom, Creativity,* and *Discipline*.
 - **Boss Raids**: Take on complex, long-term challenges (like "Procrastination"). Deal damage to bosses by completing specific counter-quests.
 - **Skill Tree & Armory**: Spend skill points earned from leveling up on a branching skill tree. Use earned gold in the Shop to buy equipment that enhances your progression.
