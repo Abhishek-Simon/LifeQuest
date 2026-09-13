@@ -20,10 +20,17 @@ app = FastAPI(
     version="1.0.0",
 )
 
+origins = [
+    settings.FRONTEND_URL,
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:8000"
+]
+
 # CORS configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[settings.FRONTEND_URL],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -54,6 +61,10 @@ app.include_router(api_router, prefix="/api/v1")
 @app.on_event("startup")
 async def startup_event():
     logger.info("Starting LifeQuest API...")
+
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "LifeQuest API is running."}
 
 @app.on_event("shutdown")
 async def shutdown_event():

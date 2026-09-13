@@ -1,4 +1,10 @@
-const API_URL = import.meta.env.VITE_API_URL;
+const API_BASE = import.meta.env.VITE_API_URL;
+
+if (!API_BASE) {
+    throw new Error('VITE_API_URL is not configured');
+}
+
+const API_URL = API_BASE.endsWith('/api/v1') ? API_BASE : `${API_BASE.replace(/\/$/, '')}/api/v1`;
 
 class ApiError extends Error {
   constructor(message, status, data) {
