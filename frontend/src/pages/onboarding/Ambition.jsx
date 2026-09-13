@@ -123,7 +123,8 @@ export const Ambition = () => {
               <button type="button" onClick={handleClear} className="px-space-xs text-text-muted hover:text-text-primary transition-colors flex items-center">
                 <span className="material-symbols-outlined text-lg">cancel</span>
               </button>
-              <div className="hidden sm:flex items-center gap-1 bg-surface-deck px-space-sm py-1 rounded text-text-muted font-label-rpg-sm text-label-rpg-sm">
+              <div className={`hidden sm:flex items-center gap-1 px-space-sm py-1 rounded font-label-rpg-sm text-label-rpg-sm transition-all duration-300 ${inputValue.trim() ? 'bg-primary/20 text-primary shadow-[0_0_10px_rgba(160,120,255,0.3)]' : 'bg-surface-deck text-text-muted'}`}>
+                {inputValue.trim() && <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>}
                 <span>PROMPT ACTIVE</span>
               </div>
             </div>
